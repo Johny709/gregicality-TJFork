@@ -231,7 +231,7 @@ public class NuclearHandler {
                     .fluidOutputs(radioactiveMaterial.getFluidHexafluoride(1000))
                     .buildAndRegister();
 
-            IntCircuitRecipeBuilder builder1 = GAS_CENTRIFUGE_RECIPES.recipeBuilder().duration(500 * complexity / 100).EUt(960).fluidInputs(radioactiveMaterial.getFluidHexafluoride(20000));
+            IntCircuitRecipeBuilder builder1 = GAS_CENTRIFUGE_RECIPES.recipeBuilder().duration(350 * complexity / 100).EUt(960).fluidInputs(radioactiveMaterial.getFluidHexafluoride(20000));
             radioactiveMaterial.composition.forEach((key, value) -> builder1.fluidOutputs(key.getFluidHexafluoride(value * 2)));
             builder1.buildAndRegister();
 
@@ -248,7 +248,7 @@ public class NuclearHandler {
                         .notConsumable(new IntCircuitIngredient(0))
                         .fluidInputs(key.getFluidHexafluorideSteamCracked(1000))
                         .outputs(key.getItemStack(GAEnums.GAOrePrefix.dioxide, 3))
-                        .fluidOutputs(HydrofluoricAcid.getFluid(6000))
+                        .fluidOutputs(Fluorine.getFluid(6000))
                         .buildAndRegister();
 
                 // [Mat + 2O] -> Mat + 2O
