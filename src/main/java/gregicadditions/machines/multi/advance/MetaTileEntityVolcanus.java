@@ -62,7 +62,7 @@ public class MetaTileEntityVolcanus extends MetaTileEntityElectricBlastFurnace {
 
     public MetaTileEntityVolcanus(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
-        this.recipeMapWorkable = new VolcanusRecipeLogic(this, ENERGY_DECREASE_FACTOR, DURATION_DECREASE_FACTOR, 100, 3);
+        this.recipeMapWorkable = new VolcanusRecipeLogic(this, ENERGY_DECREASE_FACTOR, DURATION_DECREASE_FACTOR, 100, 4);
         reinitializeStructurePattern();
     }
 
