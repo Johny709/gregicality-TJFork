@@ -5,6 +5,7 @@ import gregicadditions.item.GAMultiblockCasing2;
 import gregicadditions.machines.multi.simple.LargeSimpleRecipeMapMultiblockController;
 import gregicadditions.utils.GALog;
 import gregtech.api.capability.IMultipleTankHandler;
+import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.multiblock.BlockWorldState;
 import gregtech.api.multiblock.PatternMatchContext;
@@ -168,9 +169,11 @@ public abstract class MegaMultiblockRecipeMapController extends LargeSimpleRecip
             // if there isn't, we can't process this recipe.
             List<ItemStack> totalOutputs = newRecipe.getChancedOutputs().stream().map(Recipe.ChanceEntry::getItemStack).collect(Collectors.toList());
             totalOutputs.addAll(outputI);
-            boolean canFitOutputs = InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
-            canFitOutputs = canFitOutputs && GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
-            if (!canFitOutputs)
+            boolean canFitItemOutputs = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isItemInfSink() ||
+                    InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
+            boolean canFitFluidOutputs = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isFluidInfSink() ||
+                    GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
+            if (!canFitItemOutputs || !canFitFluidOutputs)
                 return matchingRecipe;
 
             newRecipe.inputsIngredients(newRecipeInputs)
