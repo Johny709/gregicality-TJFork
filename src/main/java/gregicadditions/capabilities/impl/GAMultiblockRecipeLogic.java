@@ -235,8 +235,8 @@ public class GAMultiblockRecipeLogic extends MultiblockRecipeLogic {
             boolean ignoreOutputFluidSpace = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isFluidInfSink();
             boolean setup = (totalEUt >= 0 ? getEnergyStored() >= (totalEUt > getEnergyCapacity() / 2 ? resultOverclock[0] : totalEUt) :
                     (getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
-                    ignoreOutputItemSpace || MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
-                    ignoreOutputFluidSpace || MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
+                    (ignoreOutputItemSpace || MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots()))) &&
+                    (ignoreOutputFluidSpace || MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs())) &&
                     recipe.matches(true, importInventory, importFluids);
 
             if (setup) {
