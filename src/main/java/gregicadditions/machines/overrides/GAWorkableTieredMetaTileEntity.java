@@ -38,8 +38,8 @@ public abstract class GAWorkableTieredMetaTileEntity extends GATieredMetaTileEnt
 
     protected final RecipeLogicEnergy workable;
     protected final OrientedOverlayRenderer renderer;
-    protected ItemStackHandler ghostCircuitInventory = new ItemStackHandler(1);
-    protected IItemHandlerModifiable combinedInputInventory = new ItemHandlerList(Arrays.asList(this.ghostCircuitInventory, this.importItems));
+    protected final ItemStackHandler ghostCircuitInventory = new ItemStackHandler(1);
+    protected final IItemHandlerModifiable combinedInputInventory;
 
     public GAWorkableTieredMetaTileEntity(ResourceLocation metaTileEntityId, RecipeMap<?> recipeMap, OrientedOverlayRenderer renderer, int tier) {
         super(metaTileEntityId, tier);
@@ -47,6 +47,7 @@ public abstract class GAWorkableTieredMetaTileEntity extends GATieredMetaTileEnt
         this.workable = createWorkable(recipeMap);
         initializeInventory();
         reinitializeEnergyContainer();
+        this.combinedInputInventory = new ItemHandlerList(Arrays.asList(this.ghostCircuitInventory, this.importItems));
     }
 
     protected RecipeLogicEnergy createWorkable(RecipeMap<?> recipeMap) {
