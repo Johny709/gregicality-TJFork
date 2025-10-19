@@ -6,6 +6,7 @@ import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.recipes.Recipe;
 import net.minecraft.item.ItemStack;
@@ -230,10 +231,12 @@ public class GAMultiblockRecipeLogic extends MultiblockRecipeLogic {
             IItemHandlerModifiable exportInventory = getOutputInventory();
             IMultipleTankHandler importFluids = getInputTank();
             IMultipleTankHandler exportFluids = getOutputTank();
+            boolean ignoreOutputItemSpace = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isItemInfSink();
+            boolean ignoreOutputFluidSpace = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isFluidInfSink();
             boolean setup = (totalEUt >= 0 ? getEnergyStored() >= (totalEUt > getEnergyCapacity() / 2 ? resultOverclock[0] : totalEUt) :
                     (getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
-                    MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
-                    MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
+                    (ignoreOutputItemSpace || MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots()))) &&
+                    (ignoreOutputFluidSpace || MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs())) &&
                     recipe.matches(true, importInventory, importFluids);
 
             if (setup) {
