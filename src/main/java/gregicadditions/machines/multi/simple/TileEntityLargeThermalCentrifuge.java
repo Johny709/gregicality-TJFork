@@ -6,7 +6,6 @@ import gregicadditions.item.GAHeatingCoil;
 import gregicadditions.item.components.MotorCasing;
 import gregicadditions.item.metal.MetalCasing2;
 import gregicadditions.machines.multi.CasingUtils;
-import gregicadditions.machines.multi.mega.MetaTileEntityMegaBlastFurnace;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
@@ -223,7 +222,8 @@ public class TileEntityLargeThermalCentrifuge extends LargeSimpleRecipeMapMultib
 	}
 
 	private void replaceCoilsAsActive(boolean isActive) {
-		this.activeStates.forEach(pos -> {
+		if (!GAConfig.Misc.activeCoils) return;
+		for (BlockPos pos : this.activeStates) {
 			IBlockState state = this.getWorld().getBlockState(pos);
 			Block block = state.getBlock();
 			if (block instanceof BlockWireCoil) {
@@ -233,7 +233,7 @@ public class TileEntityLargeThermalCentrifuge extends LargeSimpleRecipeMapMultib
 				state = state.withProperty(GAHeatingCoil.ACTIVE, isActive);
 				this.getWorld().setBlockState(pos, state);
 			}
-		});
+		}
 	}
 
 	@Override
