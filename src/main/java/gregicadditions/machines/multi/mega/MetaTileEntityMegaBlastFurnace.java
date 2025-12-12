@@ -234,7 +234,8 @@ public class MetaTileEntityMegaBlastFurnace extends MegaMultiblockRecipeMapContr
     }
 
     private void replaceCoilsAsActive(boolean isActive) {
-        this.activeStates.forEach(pos -> {
+        if (!GAConfig.Misc.activeCoils) return;
+        for (BlockPos pos : this.activeStates) {
             IBlockState state = this.getWorld().getBlockState(pos);
             Block block = state.getBlock();
             if (block instanceof BlockWireCoil) {
@@ -244,7 +245,7 @@ public class MetaTileEntityMegaBlastFurnace extends MegaMultiblockRecipeMapContr
                 state = state.withProperty(GAHeatingCoil.ACTIVE, isActive);
                 this.getWorld().setBlockState(pos, state);
             }
-        });
+        }
     }
 
     @Override

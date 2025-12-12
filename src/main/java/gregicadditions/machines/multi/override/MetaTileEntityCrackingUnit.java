@@ -1,13 +1,10 @@
 package gregicadditions.machines.multi.override;
 
 import gregicadditions.GAConfig;
-import gregicadditions.GAValues;
 import gregicadditions.capabilities.GregicAdditionsCapabilities;
 import gregicadditions.capabilities.impl.GAMultiblockRecipeLogic;
 import gregicadditions.capabilities.impl.GARecipeMapMultiblockController;
 import gregicadditions.item.GAHeatingCoil;
-import gregicadditions.machines.multi.simple.LargeSimpleRecipeMapMultiblockController;
-import gregicadditions.machines.multi.simple.TileEntityLargeChemicalReactor;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
@@ -137,7 +134,8 @@ public class MetaTileEntityCrackingUnit extends GARecipeMapMultiblockController 
     }
 
     private void replaceCoilsAsActive(boolean isActive) {
-        this.activeStates.forEach(pos -> {
+        if (!GAConfig.Misc.activeCoils) return;
+        for (BlockPos pos : this.activeStates) {
             IBlockState state = this.getWorld().getBlockState(pos);
             Block block = state.getBlock();
             if (block instanceof BlockWireCoil) {
@@ -147,7 +145,7 @@ public class MetaTileEntityCrackingUnit extends GARecipeMapMultiblockController 
                 state = state.withProperty(GAHeatingCoil.ACTIVE, isActive);
                 this.getWorld().setBlockState(pos, state);
             }
-        });
+        }
     }
 
     @Override

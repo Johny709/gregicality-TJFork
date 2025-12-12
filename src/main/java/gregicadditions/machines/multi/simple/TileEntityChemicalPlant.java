@@ -7,7 +7,6 @@ import gregicadditions.item.GAHeatingCoil;
 import gregicadditions.item.GAMetaBlocks;
 import gregicadditions.item.GAMultiblockCasing;
 import gregicadditions.item.components.MotorCasing;
-import gregicadditions.machines.multi.override.MetaTileEntityElectricBlastFurnace;
 import gregicadditions.recipes.GARecipeMaps;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
@@ -245,7 +244,8 @@ public class TileEntityChemicalPlant extends MultiRecipeMapMultiblockController 
 	}
 
 	private void replaceCoilsAsActive(boolean isActive) {
-		this.activeStates.forEach(pos -> {
+		if (!GAConfig.Misc.activeCoils) return;
+		for (BlockPos pos : this.activeStates) {
 			IBlockState state = this.getWorld().getBlockState(pos);
 			Block block = state.getBlock();
 			if (block instanceof BlockWireCoil) {
@@ -255,7 +255,7 @@ public class TileEntityChemicalPlant extends MultiRecipeMapMultiblockController 
 				state = state.withProperty(GAHeatingCoil.ACTIVE, isActive);
 				this.getWorld().setBlockState(pos, state);
 			}
-		});
+		}
 	}
 
 	@Override

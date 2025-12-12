@@ -5,7 +5,6 @@ import gregicadditions.GAUtility;
 import gregicadditions.capabilities.GregicAdditionsCapabilities;
 import gregicadditions.capabilities.impl.GARecipeMapMultiblockController;
 import gregicadditions.item.GAHeatingCoil;
-import gregicadditions.machines.multi.mega.MetaTileEntityMegaBlastFurnace;
 import gregicadditions.machines.multi.simple.LargeSimpleRecipeMapMultiblockController;
 import gregicadditions.utils.GALog;
 import gregtech.api.capability.IMultipleTankHandler;
@@ -178,7 +177,8 @@ public class MetaTileEntityPyrolyseOven extends GARecipeMapMultiblockController 
     }
 
     private void replaceCoilsAsActive(boolean isActive) {
-        this.activeStates.forEach(pos -> {
+        if (!GAConfig.Misc.activeCoils) return;
+        for (BlockPos pos : this.activeStates) {
             IBlockState state = this.getWorld().getBlockState(pos);
             Block block = state.getBlock();
             if (block instanceof BlockWireCoil) {
@@ -188,7 +188,7 @@ public class MetaTileEntityPyrolyseOven extends GARecipeMapMultiblockController 
                 state = state.withProperty(GAHeatingCoil.ACTIVE, isActive);
                 this.getWorld().setBlockState(pos, state);
             }
-        });
+        }
     }
 
     @Override
