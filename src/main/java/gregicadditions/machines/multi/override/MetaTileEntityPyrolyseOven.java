@@ -270,7 +270,7 @@ public class MetaTileEntityPyrolyseOven extends GARecipeMapMultiblockController 
                         .fluidInputs(newFluidInputs)
                         .outputs(outputI)
                         .fluidOutputs(outputF)
-                        .EUt(Math.max(1, EUt * heatingCoilDiscount / 100))
+                        .EUt((int) Math.min(Integer.MAX_VALUE, Math.max(1, (long) EUt * heatingCoilDiscount / 100)))
                         .duration((int) Math.max(3, duration * (this.getDurationPercentage() / 100.0)));
 
                 return newRecipe.build().getResult();
