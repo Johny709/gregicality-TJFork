@@ -263,7 +263,7 @@ public class TileEntityLargeThermalCentrifuge extends LargeSimpleRecipeMapMultib
 			int speedBonus = metaTileEntity.getSpeedBonus();
 
 			// apply speed bonus
-			resultOverclock[1] -= (int) (resultOverclock[0] * speedBonus * 0.01f);
+			resultOverclock[1] -= (int) (resultOverclock[1] * speedBonus * 0.01f);
 
 			setMaxProgress(resultOverclock[1]);
 			this.recipeEUt = resultOverclock[0];
