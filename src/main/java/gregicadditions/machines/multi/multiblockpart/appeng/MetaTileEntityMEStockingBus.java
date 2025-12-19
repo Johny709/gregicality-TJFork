@@ -347,7 +347,6 @@ public class MetaTileEntityMEStockingBus extends MetaTileEntityMEInputBus implem
                     IAEItemStack result = monitor.extractItems(request, action, holder.getActionSource());
                     if (result != null) {
                         int extracted = (int) Math.min(result.getStackSize(), amount);
-                        this.stock.decStackSize(extracted); // may as well update the display here
                         if (this.trigger != null) {
                             this.trigger.accept(0);
                         }
