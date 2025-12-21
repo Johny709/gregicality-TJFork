@@ -1,15 +1,12 @@
 package gregicadditions.machines.multi.advance;
 
 import gregicadditions.GAMaterials;
-import gregicadditions.GAUtility;
 import gregicadditions.GAValues;
 import gregicadditions.capabilities.GregicAdditionsCapabilities;
 import gregicadditions.item.metal.MetalCasing1;
 import gregicadditions.machines.multi.GAFuelRecipeLogic;
 import gregicadditions.machines.multi.GAFueledMultiblockController;
 import gregicadditions.recipes.GARecipeMaps;
-import gregicadditions.recipes.helper.HelperMethods;
-import gregtech.api.GTValues;
 import gregtech.api.capability.IEnergyContainer;
 import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.FuelRecipeLogic;
@@ -164,7 +161,6 @@ public class MetaTileEntityLargeRocketEngine extends GAFueledMultiblockControlle
             return isUsingoxygen;
         }
 
-
         @Override
         protected int calculateFuelAmount(FuelRecipe recipe) {
             FluidStack rocketFuel = recipe.getRecipeFluid().copy();
@@ -172,34 +168,29 @@ public class MetaTileEntityLargeRocketEngine extends GAFueledMultiblockControlle
             return  recipe.getRecipeFluid().amount * getVoltageMultiplier(maxVoltage * (isUsingOxygen() ? 10 : 4), recipe.getMinVoltage()) * (isUsingOxygen() ? 2 : 1);
         }
 
-
-
         @Override
         protected long startRecipe(FuelRecipe recipe, int fuelUsed, int recipeDuration) {
             long MaxVoltage = this.getMaxVoltage();
 
+            // Drain tanks
+            if (checkAir()) {
+                fluidTank.get().drain(Materials.Air.getFluid(AIR_INTAKE_PER_SEC), true);
+            } else return 0;
 
-    // Drain tanks
-    if (checkAir()) {
-        fluidTank.get().drain(Materials.Air.getFluid(AIR_INTAKE_PER_SEC), true);
-    } else return 0;
-
-    // Check boosted status and drain if needed
+            // Check boosted status and drain if needed
             oxygenNeededToBoost = 4 * (int) Math.ceil(fuelUsed / 10.0);
-    if (checkBoost()) {
-        fluidTank.get().drain(GAMaterials.LiquidOxygen.getFluid(oxygenNeededToBoost), true);
-        MaxVoltage *= 64;
-    } else {
-        MaxVoltage *= 32;
-    }
+            if (checkBoost()) {
+                fluidTank.get().drain(GAMaterials.LiquidOxygen.getFluid(oxygenNeededToBoost), true);
+                MaxVoltage *= 64;
+            } else {
+                MaxVoltage *= 32;
+            }
 
+            // Refresh our internal FluidStack
+            fuelStack.amount -= fuelUsed;
 
-    // Refresh our internal FluidStack
-    fuelStack.amount -= fuelUsed;
-
-    return MaxVoltage;
-}
-
+            return MaxVoltage;
+        }
 
         public int getOxygenNeededToBoost() {
             return oxygenNeededToBoost;
