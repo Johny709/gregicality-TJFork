@@ -237,7 +237,7 @@ public class GAMultiblockRecipeLogic extends MultiblockRecipeLogic {
                     (getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
                     (ignoreOutputItemSpace || MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots()))) &&
                     (ignoreOutputFluidSpace || MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs())) &&
-                    recipe.matches(true, importInventory, importFluids);
+                    recipe.matchesFound(true, importInventory, importFluids);
 
             if (setup) {
                 controller.checkRecipe(recipe, true);

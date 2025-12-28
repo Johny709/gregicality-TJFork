@@ -21,6 +21,8 @@ import gregtech.api.recipes.RecipeMaps;
 import gregtech.api.render.ICubeRenderer;
 import gregtech.api.render.OrientedOverlayRenderer;
 import gregtech.api.render.Textures;
+import gregtech.api.util.GTFluidUtils;
+import gregtech.api.util.GTUtility;
 import gregtech.api.util.InventoryUtils;
 import gregtech.common.blocks.BlockMetalCasing;
 import gregtech.common.blocks.BlockWireCoil;
@@ -237,10 +239,7 @@ public class MetaTileEntityMultiFurnace extends GARecipeMapMultiblockController 
                     continue;
 
                 // Determine if there is a valid recipe for this item. If not, skip it.
-                Recipe matchingRecipe = recipeMap.findRecipe(maxVoltage,
-                        Collections.singletonList(currentInputItem),
-                        Collections.emptyList(), 0, useOptimizedRecipeLookUp);
-                CountableIngredient inputIngredient;
+                Recipe matchingRecipe = recipeMap.searchRecipe(maxVoltage, GTUtility.createItemHandlerFromList(Collections.singletonList(currentInputItem)), GTFluidUtils.createTankHandlerFromList(Collections.emptyList()), 0, useOptimizedRecipeLookUp);CountableIngredient inputIngredient;
                 if (matchingRecipe != null)
                     inputIngredient = matchingRecipe.getInputs().get(0);
                 else
