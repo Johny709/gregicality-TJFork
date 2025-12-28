@@ -221,7 +221,7 @@ public abstract class MultiRecipeMapMultiblockController extends LargeSimpleReci
             MultiRecipeMapMultiblockController metaTileEntity = (MultiRecipeMapMultiblockController) getMetaTileEntity();
             int recipeMapIndex = metaTileEntity.getRecipeMapIndex();
             // use the current recipemap for recipe finding
-            return this.recipeMaps[recipeMapIndex].findRecipe(maxVoltage, inputs, fluidInputs, this.getMinTankCapacity(this.getOutputTank()), useOptimizedRecipeLookUp);
+            return this.recipeMaps[recipeMapIndex].searchRecipe(maxVoltage, inputs, fluidInputs, this.getMinTankCapacity(this.getOutputTank()), useOptimizedRecipeLookUp);
 
 //            if (recipe != null) {
 //                return createRecipe(maxVoltage, inputs, fluidInputs, recipe);

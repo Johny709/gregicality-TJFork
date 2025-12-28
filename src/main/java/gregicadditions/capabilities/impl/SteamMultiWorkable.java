@@ -5,6 +5,8 @@ import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.recipes.CountableIngredient;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeBuilder;
+import gregtech.api.util.GTFluidUtils;
+import gregtech.api.util.GTUtility;
 import gregtech.api.util.InventoryUtils;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -81,9 +83,7 @@ public class SteamMultiWorkable extends SteamMultiblockRecipeLogic {
                 continue;
 
             // Check recipe for item in slot
-            Recipe matchingRecipe = recipeMap.findRecipe(maxVoltage,
-                    Collections.singletonList(currentInputItem),
-                    Collections.emptyList(), 0, useOptimizedRecipeLookUp);
+            Recipe matchingRecipe = recipeMap.searchRecipe(maxVoltage, GTUtility.createItemHandlerFromList(Collections.singletonList(currentInputItem)), GTFluidUtils.createTankHandlerFromList(Collections.emptyList()), 0, useOptimizedRecipeLookUp);
             CountableIngredient inputIngredient;
             if (matchingRecipe != null) {
                 if (matchingRecipe.getOutputs().isEmpty())
