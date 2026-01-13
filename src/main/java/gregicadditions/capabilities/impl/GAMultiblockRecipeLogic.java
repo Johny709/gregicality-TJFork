@@ -224,19 +224,12 @@ public class GAMultiblockRecipeLogic extends MultiblockRecipeLogic {
     protected boolean setupAndConsumeRecipeInputs(Recipe recipe, int index) {
         RecipeMapMultiblockController controller = (RecipeMapMultiblockController) metaTileEntity;
         if (controller.checkRecipe(recipe, false)) {
-
             int[] resultOverclock = calculateOverclock(recipe.getEUt(), recipe.getDuration());
-            int totalEUt = resultOverclock[0] * resultOverclock[1];
+            long totalEUt = (long) resultOverclock[0] * resultOverclock[1];
             IItemHandlerModifiable importInventory = getInputBuses().get(index);
-            IItemHandlerModifiable exportInventory = getOutputInventory();
             IMultipleTankHandler importFluids = getInputTank();
-            IMultipleTankHandler exportFluids = getOutputTank();
-            boolean ignoreOutputItemSpace = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isItemInfSink();
-            boolean ignoreOutputFluidSpace = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isFluidInfSink();
             boolean setup = (totalEUt >= 0 ? getEnergyStored() >= (totalEUt > getEnergyCapacity() / 2 ? resultOverclock[0] : totalEUt) :
                     (getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
-                    (ignoreOutputItemSpace || MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots()))) &&
-                    (ignoreOutputFluidSpace || MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs())) &&
                     recipe.matchesFound(true, importInventory, importFluids);
 
             if (setup) {
