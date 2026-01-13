@@ -20,10 +20,10 @@ import gregtech.api.recipes.*;
 import gregtech.api.render.ICubeRenderer;
 import gregtech.api.render.OrientedOverlayRenderer;
 import gregtech.api.render.Textures;
-import gregtech.api.util.GTFluidUtils;
-import gregtech.api.util.InventoryUtils;
 import gregtech.common.blocks.BlockBoilerCasing;
 import gregtech.common.blocks.MetaBlocks;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -163,13 +163,13 @@ public class MetaTileEntityAdvancedDistillationTower extends MultiRecipeMapMulti
             }
 
             Set<ItemStack> countIngredients = new HashSet<>();
-            if (matchingRecipe.getInputs().size() != 0) {
+            if (!matchingRecipe.getInputs().isEmpty()) {
                 this.findIngredients(countIngredients, inputs);
                 minMultiplier = Math.min(maxItemsLimit, this.getMinRatioItem(countIngredients, matchingRecipe, maxItemsLimit));
             }
 
-            Map<String, Integer> countFluid = new HashMap<>();
-            if (matchingRecipe.getFluidInputs().size() != 0) {
+            Object2IntMap<String> countFluid = new Object2IntOpenHashMap<>();
+            if (!matchingRecipe.getFluidInputs().isEmpty()) {
 
                 this.findFluid(countFluid, fluidInputs);
                 minMultiplier = Math.min(minMultiplier, this.getMinRatioFluid(countFluid, matchingRecipe, maxItemsLimit));
@@ -210,12 +210,6 @@ public class MetaTileEntityAdvancedDistillationTower extends MultiRecipeMapMulti
                 // if there isn't, we can't process this recipe.
                 List<ItemStack> totalOutputs = newRecipe.getChancedOutputs().stream().map(Recipe.ChanceEntry::getItemStack).collect(Collectors.toList());
                 totalOutputs.addAll(outputI);
-                boolean canFitItemOutputs = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isItemInfSink() ||
-                        InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
-                boolean canFitFluidOutputs = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isFluidInfSink() ||
-                        GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
-                if (!canFitItemOutputs || !canFitFluidOutputs)
-                    continue;
 
                 newRecipe.inputsIngredients(newRecipeInputs)
                         .fluidInputs(newFluidInputs)

@@ -5,7 +5,6 @@ import gregicadditions.item.GAMultiblockCasing2;
 import gregicadditions.machines.multi.simple.LargeSimpleRecipeMapMultiblockController;
 import gregicadditions.utils.GALog;
 import gregtech.api.capability.IMultipleTankHandler;
-import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.multiblock.BlockWorldState;
 import gregtech.api.multiblock.PatternMatchContext;
@@ -13,8 +12,8 @@ import gregtech.api.recipes.CountableIngredient;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeBuilder;
 import gregtech.api.recipes.RecipeMap;
-import gregtech.api.util.GTFluidUtils;
-import gregtech.api.util.InventoryUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -127,13 +126,13 @@ public abstract class MegaMultiblockRecipeMapController extends LargeSimpleRecip
             int minMultiplier = Integer.MAX_VALUE;
 
             Set<ItemStack> countIngredients = new HashSet<>();
-            if (matchingRecipe.getInputs().size() != 0) {
+            if (!matchingRecipe.getInputs().isEmpty()) {
                 this.findIngredients(countIngredients, inputs);
                 minMultiplier = this.getMinRatioItem(countIngredients, matchingRecipe, MAX_ITEMS_LIMIT);
             }
 
-            Map<String, Integer> countFluid = new HashMap<>();
-            if (matchingRecipe.getFluidInputs().size() != 0) {
+            Object2IntMap<String> countFluid = new Object2IntOpenHashMap<>();
+            if (!matchingRecipe.getFluidInputs().isEmpty()) {
 
                 this.findFluid(countFluid, fluidInputs);
                 minMultiplier = this.getMinRatioFluid(countFluid, matchingRecipe, MAX_ITEMS_LIMIT);
@@ -169,12 +168,6 @@ public abstract class MegaMultiblockRecipeMapController extends LargeSimpleRecip
             // if there isn't, we can't process this recipe.
             List<ItemStack> totalOutputs = newRecipe.getChancedOutputs().stream().map(Recipe.ChanceEntry::getItemStack).collect(Collectors.toList());
             totalOutputs.addAll(outputI);
-            boolean canFitItemOutputs = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isItemInfSink() ||
-                    InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
-            boolean canFitFluidOutputs = this.metaTileEntity instanceof MultiblockWithDisplayBase && ((MultiblockWithDisplayBase) this.metaTileEntity).isFluidInfSink() ||
-                    GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
-            if (!canFitItemOutputs || !canFitFluidOutputs)
-                return matchingRecipe;
 
             newRecipe.inputsIngredients(newRecipeInputs)
                     .fluidInputs(newFluidInputs)

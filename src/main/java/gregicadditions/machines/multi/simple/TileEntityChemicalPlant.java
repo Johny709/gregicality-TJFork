@@ -26,6 +26,9 @@ import gregtech.api.render.Textures;
 import gregtech.api.util.GTUtility;
 import gregtech.common.blocks.BlockWireCoil;
 import net.minecraft.block.Block;
+import gregtech.common.blocks.BlockWireCoil;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -300,14 +303,14 @@ public class TileEntityChemicalPlant extends MultiRecipeMapMultiblockController 
 		}
 
 		@Override
-		protected int getMinRatioFluid(Map<String, Integer> countFluid, Recipe r, int maxItemsLimit) {
+		protected int getMinRatioFluid(Object2IntMap<String> countFluid, Recipe r, int maxItemsLimit) {
 			if (((TileEntityChemicalPlant) metaTileEntity).getRecipeMapIndex() == 1)
 				return 1;
 			int minMultiplier = Integer.MAX_VALUE;
 			for (FluidStack fs : r.getFluidInputs()) {
 				if (fs.amount != 0) { // skip notConsumable fluids
 					String name = fs.getFluid().getUnlocalizedName();
-					int ratio = Math.min(maxItemsLimit, countFluid.get(name) / fs.amount);
+					int ratio = Math.min(maxItemsLimit, countFluid.getInt(name) / fs.amount);
 					if (ratio < minMultiplier) {
 						minMultiplier = ratio;
 					}
