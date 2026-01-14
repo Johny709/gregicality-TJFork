@@ -6,6 +6,7 @@ import gregtech.api.capability.IMultipleTankHandler;
 import gregtech.api.capability.impl.MultiblockRecipeLogic;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.metatileentity.multiblock.MultiblockWithDisplayBase;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
 import gregtech.api.recipes.Recipe;
 import net.minecraft.item.ItemStack;
@@ -223,18 +224,13 @@ public class GAMultiblockRecipeLogic extends MultiblockRecipeLogic {
     protected boolean setupAndConsumeRecipeInputs(Recipe recipe, int index) {
         RecipeMapMultiblockController controller = (RecipeMapMultiblockController) metaTileEntity;
         if (controller.checkRecipe(recipe, false)) {
-
             int[] resultOverclock = calculateOverclock(recipe.getEUt(), recipe.getDuration());
-            int totalEUt = resultOverclock[0] * resultOverclock[1];
+            long totalEUt = (long) resultOverclock[0] * resultOverclock[1];
             IItemHandlerModifiable importInventory = getInputBuses().get(index);
-            IItemHandlerModifiable exportInventory = getOutputInventory();
             IMultipleTankHandler importFluids = getInputTank();
-            IMultipleTankHandler exportFluids = getOutputTank();
             boolean setup = (totalEUt >= 0 ? getEnergyStored() >= (totalEUt > getEnergyCapacity() / 2 ? resultOverclock[0] : totalEUt) :
                     (getEnergyStored() - resultOverclock[0] <= getEnergyCapacity())) &&
-                    MetaTileEntity.addItemsToItemHandler(exportInventory, true, recipe.getAllItemOutputs(exportInventory.getSlots())) &&
-                    MetaTileEntity.addFluidsToFluidHandler(exportFluids, true, recipe.getFluidOutputs()) &&
-                    recipe.matches(true, importInventory, importFluids);
+                    recipe.matchesFound(true, importInventory, importFluids);
 
             if (setup) {
                 controller.checkRecipe(recipe, true);

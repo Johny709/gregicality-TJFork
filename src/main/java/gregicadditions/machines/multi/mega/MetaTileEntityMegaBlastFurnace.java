@@ -24,10 +24,11 @@ import gregtech.api.recipes.builders.BlastRecipeBuilder;
 import gregtech.api.recipes.recipeproperties.BlastTemperatureProperty;
 import gregtech.api.render.ICubeRenderer;
 import gregtech.api.render.Textures;
-import gregtech.api.util.GTFluidUtils;
 import gregtech.api.util.GTUtility;
-import gregtech.api.util.InventoryUtils;
 import gregtech.common.blocks.*;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import net.minecraft.block.Block;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -298,13 +299,13 @@ public class MetaTileEntityMegaBlastFurnace extends MegaMultiblockRecipeMapContr
             int recipeTemp = matchingRecipe.getRecipePropertyStorage().getRecipePropertyValue(BlastTemperatureProperty.getInstance(), 0);
             int tier = getOverclockingTier(maxVoltage);
             Set<ItemStack> countIngredients = new HashSet<>();
-            if (matchingRecipe.getInputs().size() != 0) {
+            if (!matchingRecipe.getInputs().isEmpty()) {
                 this.findIngredients(countIngredients, inputs);
                 minMultiplier = this.getMinRatioItem(countIngredients, matchingRecipe, MAX_ITEMS_LIMIT);
             }
 
-            Map<String, Integer> countFluid = new HashMap<>();
-            if (matchingRecipe.getFluidInputs().size() != 0) {
+            Object2IntMap<String> countFluid = new Object2IntOpenHashMap<>();
+            if (!matchingRecipe.getFluidInputs().isEmpty()) {
 
                 this.findFluid(countFluid, fluidInputs);
                 minMultiplier = Math.min(minMultiplier, this.getMinRatioFluid(countFluid, matchingRecipe, MAX_ITEMS_LIMIT));
@@ -368,10 +369,6 @@ public class MetaTileEntityMegaBlastFurnace extends MegaMultiblockRecipeMapContr
             // if there isn't, we can't process this recipe.
             List<ItemStack> totalOutputs = newRecipe.getChancedOutputs().stream().map(Recipe.ChanceEntry::getItemStack).collect(Collectors.toList());
             totalOutputs.addAll(outputI);
-            boolean canFitOutputs = InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
-            canFitOutputs = canFitOutputs && GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
-            if (!canFitOutputs)
-                return matchingRecipe;
 
             newRecipe.inputsIngredients(newRecipeInputs)
                     .fluidInputs(newFluidInputs)

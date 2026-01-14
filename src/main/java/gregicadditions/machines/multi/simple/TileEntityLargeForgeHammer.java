@@ -24,8 +24,8 @@ import gregtech.api.render.ICubeRenderer;
 import gregtech.api.render.OrientedOverlayRenderer;
 import gregtech.api.render.Textures;
 import gregtech.api.unification.material.Materials;
-import gregtech.api.util.GTFluidUtils;
-import gregtech.api.util.InventoryUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -139,13 +139,13 @@ public class TileEntityLargeForgeHammer extends MultiRecipeMapMultiblockControll
             }
 
             Set<ItemStack> countIngredients = new HashSet<>();
-            if (matchingRecipe.getInputs().size() != 0) {
+            if (!matchingRecipe.getInputs().isEmpty()) {
                 this.findIngredients(countIngredients, inputs);
                 minMultiplier = Math.min(maxItemsLimit, this.getMinRatioItem(countIngredients, matchingRecipe, maxItemsLimit));
             }
 
-            Map<String, Integer> countFluid = new HashMap<>();
-            if (matchingRecipe.getFluidInputs().size() != 0) {
+            Object2IntMap<String> countFluid = new Object2IntOpenHashMap<>();
+            if (!matchingRecipe.getFluidInputs().isEmpty()) {
 
                 this.findFluid(countFluid, fluidInputs);
                 minMultiplier = Math.min(minMultiplier, this.getMinRatioFluid(countFluid, matchingRecipe, maxItemsLimit));
@@ -179,10 +179,6 @@ public class TileEntityLargeForgeHammer extends MultiRecipeMapMultiblockControll
                 // if there isn't, we can't process this recipe.
                 List<ItemStack> totalOutputs = newRecipe.getChancedOutputs().stream().map(Recipe.ChanceEntry::getItemStack).collect(Collectors.toList());
                 totalOutputs.addAll(outputI);
-                boolean canFitOutputs = InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
-                canFitOutputs = canFitOutputs && GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
-                if (!canFitOutputs)
-                    continue;
 
                 newRecipe.inputsIngredients(newRecipeInputs)
                         .fluidInputs(newFluidInputs)

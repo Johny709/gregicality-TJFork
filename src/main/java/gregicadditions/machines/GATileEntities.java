@@ -26,6 +26,7 @@ import gregicadditions.machines.multi.mega.MetaTileEntityMegaDistillationTower;
 import gregicadditions.machines.multi.mega.MetaTileEntityMegaVacuumFreezer;
 import gregicadditions.machines.multi.miner.*;
 import gregicadditions.machines.multi.multiblockpart.*;
+import gregicadditions.machines.multi.multiblockpart.appeng.MetaTileEntityMEStockingBus;
 import gregicadditions.machines.multi.nuclear.MetaTileEntityGasCentrifuge;
 import gregicadditions.machines.multi.nuclear.MetaTileEntityHotCoolantTurbine;
 import gregicadditions.machines.multi.nuclear.MetaTileEntityNuclearReactor;
@@ -262,7 +263,11 @@ public class GATileEntities {
     public static MetaTileEntityVolcanus VOLCANUS;
     public static MetaTileEntityCryogenicFreezer CRYOGENIC_FREEZER;
 
+    public static MetaTileEntityMEStockingBus ME_STOCKING_BUS;
+
     public static void init() {
+
+        ME_STOCKING_BUS = GregTechAPI.registerMetaTileEntity(1104, new MetaTileEntityMEStockingBus(gregtechId("me_stocking_bus")));
 
         MONITOR_SCREEN = GregTechAPI.registerMetaTileEntity(1999, new MetaTileEntityMonitorScreen(location("monitor_screen")));
 

@@ -2,13 +2,16 @@ package gregicadditions.recipes.categories;
 
 
 import gregicadditions.machines.GATileEntities;
+import gregtech.api.GTValues;
 import gregtech.api.recipes.ModHandler;
 import gregtech.api.recipes.ingredients.IntCircuitIngredient;
 import gregtech.api.unification.OreDictUnifier;
+import gregtech.api.unification.ore.OrePrefix;
 import gregtech.api.unification.stack.UnificationEntry;
 import gregtech.common.items.MetaItems;
 import gregtech.common.metatileentities.MetaTileEntities;
 import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import static gregicadditions.GAMaterials.*;
 import static gregicadditions.item.GAMetaItems.DEGENERATE_RHENIUM_DUST;
@@ -16,9 +19,10 @@ import static gregicadditions.recipes.GARecipeMaps.BLAST_ALLOY_RECIPES;
 import static gregicadditions.recipes.GARecipeMaps.LARGE_MIXER_RECIPES;
 import static gregtech.api.GTValues.L;
 import static gregtech.api.recipes.RecipeMaps.*;
+import static gregtech.api.unification.material.MarkerMaterials.Tier.Master;
 import static gregtech.api.unification.material.Materials.*;
 import static gregtech.api.unification.ore.OrePrefix.*;
-import static gregtech.common.items.MetaItems.PLANT_BALL;
+import static gregtech.common.items.MetaItems.*;
 import static gregtech.common.metatileentities.MetaTileEntities.*;
 import static gregicadditions.machines.GATileEntities.*;
 
@@ -253,6 +257,17 @@ public class MiscRecipes {
                 ModHandler.addShapedRecipe("steam_bus_input_to_output_" + STEAM_INPUT_BUS.getTier(), STEAM_INPUT_BUS.getStackForm(),
                         "d", "B", 'B', STEAM_OUTPUT_BUS.getStackForm());
 
+        }
+
+        if (GTValues.isModLoaded(GTValues.MODID_AE2)) {
+            ASSEMBLER_RECIPES.recipeBuilder()
+                    .input(circuit, Master, 2)
+                    .inputs(ME_INPUT_BUS.getStackForm(), SENSOR_IV.getStackForm(), EMITTER_IV.getStackForm(),
+                            new ItemStack(Item.getByNameOrId("appliedenergistics2:material"), 4, 30), // acceleration card
+                            new ItemStack(Item.getByNameOrId("appliedenergistics2:material"), 2, 44)) // annihilation cores
+                    .outputs(ME_STOCKING_BUS.getStackForm())
+                    .duration(300).EUt(7680)
+                    .buildAndRegister();
         }
     }
 }

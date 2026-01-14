@@ -15,9 +15,9 @@ import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeBuilder;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.unification.material.type.Material;
-import gregtech.api.util.GTFluidUtils;
 import gregtech.api.util.GTUtility;
-import gregtech.api.util.InventoryUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
@@ -36,7 +36,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 abstract public class LargeSimpleRecipeMapMultiblockController extends GARecipeMapMultiblockController {
 
@@ -456,13 +455,13 @@ abstract public class LargeSimpleRecipeMapMultiblockController extends GARecipeM
             }
 
             Set<ItemStack> countIngredients = new HashSet<>();
-            if (matchingRecipe.getInputs().size() != 0) {
+            if (!matchingRecipe.getInputs().isEmpty()) {
                 this.findIngredients(countIngredients, inputs);
                 minMultiplier = Math.min(maxItemsLimit, this.getMinRatioItem(countIngredients, matchingRecipe, maxItemsLimit));
             }
 
-            Map<String, Integer> countFluid = new HashMap<>();
-            if (matchingRecipe.getFluidInputs().size() != 0) {
+            Object2IntMap<String> countFluid = new Object2IntOpenHashMap<>();
+            if (!matchingRecipe.getFluidInputs().isEmpty()) {
 
                 this.findFluid(countFluid, fluidInputs);
                 minMultiplier = Math.min(minMultiplier, this.getMinRatioFluid(countFluid, matchingRecipe, maxItemsLimit));
@@ -496,11 +495,6 @@ abstract public class LargeSimpleRecipeMapMultiblockController extends GARecipeM
                 // if there isn't, we can't process this recipe.
                 List<ItemStack> totalOutputs = newRecipe.getChancedOutputs().stream().map(Recipe.ChanceEntry::getItemStack).collect(Collectors.toList());
                 totalOutputs.addAll(outputI);
-                boolean canFitOutputs = InventoryUtils.simulateItemStackMerge(totalOutputs, this.getOutputInventory());
-                canFitOutputs = canFitOutputs && GTFluidUtils.simulateFluidStackMerge(outputF, this.getOutputTank());
-                if (!canFitOutputs) {
-                    continue;
-                }
 
                 newRecipe.inputsIngredients(newRecipeInputs)
                         .fluidInputs(newFluidInputs)
@@ -518,10 +512,10 @@ abstract public class LargeSimpleRecipeMapMultiblockController extends GARecipeM
             for (Recipe.ChanceEntry s : oldRecipe.getChancedOutputs()) {
                 int chance = Math.min(10000, s.getChance() * this.chancePercentage / 100);
                 int boost = s.getBoostPerTier() * this.chancePercentage / 100;
-                IntStream.range(0, multiplier).forEach(value -> {
-                    ItemStack itemStack = s.getItemStack().copy();
-                    newRecipe.chancedOutput(itemStack, chance, boost);
-                });
+                ItemStack stack = s.getItemStack().copy();
+                int count = stack.getCount();
+                stack.setCount(count * multiplier);
+                newRecipe.chancedOutput(stack, chance, boost);
             }
         }
 
@@ -566,12 +560,12 @@ abstract public class LargeSimpleRecipeMapMultiblockController extends GARecipeM
             return minMultiplier;
         }
 
-        protected int getMinRatioFluid(Map<String, Integer> countFluid, Recipe r, int maxItemsLimit) {
+        protected int getMinRatioFluid(Object2IntMap<String> countFluid, Recipe r, int maxItemsLimit) {
             int minMultiplier = Integer.MAX_VALUE;
             for (FluidStack fs : r.getFluidInputs()) {
                 if (fs.amount != 0) { // skip notConsumable fluids
                     String name = fs.getFluid().getUnlocalizedName();
-                    int ratio = Math.min(maxItemsLimit, countFluid.get(name) / fs.amount);
+                    int ratio = Math.min(maxItemsLimit, countFluid.getInt(name) / fs.amount);
                     if (ratio < minMultiplier) {
                         minMultiplier = ratio;
                     }
@@ -580,12 +574,12 @@ abstract public class LargeSimpleRecipeMapMultiblockController extends GARecipeM
             return minMultiplier;
         }
 
-        protected void findFluid(Map<String, Integer> countFluid, IMultipleTankHandler fluidInputs) {
+        protected void findFluid(Object2IntMap<String> countFluid, IMultipleTankHandler fluidInputs) {
             for (IFluidTank tank : fluidInputs) {
                 if (tank.getFluid() != null) {
                     String name = tank.getFluid().getUnlocalizedName();
                     if (countFluid.containsKey(name)) {
-                        int existingValue = countFluid.get(name);
+                        int existingValue = countFluid.getInt(name);
                         countFluid.put(name, existingValue + tank.getFluidAmount());
                     } else {
                         countFluid.put(name, tank.getFluidAmount());

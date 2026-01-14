@@ -4,6 +4,7 @@ import gregicadditions.GAConfig;
 import gregicadditions.GAUtility;
 import gregicadditions.GAValues;
 import gregicadditions.capabilities.GregicAdditionsCapabilities;
+import gregicadditions.capabilities.IDistinct;
 import gregicadditions.item.GAHeatingCoil;
 import gregicadditions.machines.multi.IMaintenance;
 import gregicadditions.machines.multi.multiblockpart.MetaTileEntityMaintenanceHatch;
@@ -363,7 +364,7 @@ public abstract class GARecipeMapMultiblockController extends RecipeMapMultibloc
     protected void handleDisplayClick(String componentData, Widget.ClickData clickData) {
         super.handleDisplayClick(componentData, clickData);
         if (this.getInputInventory().getSlots() != 0)
-        isDistinct = !isDistinct;
+            setDistinct(!isDistinct);
     }
 
     protected void outputRecoveryItems() {
@@ -384,6 +385,17 @@ public abstract class GARecipeMapMultiblockController extends RecipeMapMultibloc
     protected void setRecoveryItems(ItemStack... recoveryItems) {
         this.recoveryItems.clear();
         this.recoveryItems.addAll(Arrays.asList(recoveryItems));
+    }
+
+    public void setDistinct(boolean distinct) {
+        this.isDistinct = distinct;
+        this.getAbilities(MultiblockAbility.IMPORT_ITEMS).stream()
+                .filter(part -> part instanceof IDistinct)
+                .forEach(part -> ((IDistinct) part).onDistinct(distinct));
+    }
+
+    public boolean isDistinct() {
+        return isDistinct;
     }
 
     public boolean isActive() {
