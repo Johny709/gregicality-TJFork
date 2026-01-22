@@ -217,9 +217,9 @@ public class MetaTileEntityVolcanus extends MetaTileEntityElectricBlastFurnace {
             while (duration >= 3 && EUt <= GAValues.V[tier - 1]) {
                 EUt *= 4;
                 duration /= 2.8;
-                if (duration <= 0) {
-                    duration = 1;
-                }
+            }
+            if (duration <= 0) {
+                duration = 1;
             }
 
             List<CountableIngredient> newRecipeInputs = new ArrayList<>();
