@@ -33,7 +33,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
@@ -57,6 +56,7 @@ public class MetaTileEntityVolcanus extends MetaTileEntityElectricBlastFurnace {
     private static final int DURATION_DECREASE_FACTOR = 20;
 
     private static final int ENERGY_DECREASE_FACTOR = 20;
+    private FluidStack pyrotheum;
 
     public MetaTileEntityVolcanus(ResourceLocation metaTileEntityId) {
         super(metaTileEntityId);
@@ -97,6 +97,7 @@ public class MetaTileEntityVolcanus extends MetaTileEntityElectricBlastFurnace {
     @Override
     protected void formStructure(PatternMatchContext context) {
         super.formStructure(context);
+        this.pyrotheum = GAMaterials.Pyrotheum.getFluid((int) Math.pow(2, GAUtility.getTierByVoltage(this.energyContainer.getInputVoltage())));
     }
 
     @Override
@@ -141,24 +142,10 @@ public class MetaTileEntityVolcanus extends MetaTileEntityElectricBlastFurnace {
 
         @Override
         protected boolean drawEnergy(int recipeEUt) {
-            int drain = (int) Math.pow(2, getOverclockingTier(getMaxVoltage()));
-            long resultEnergy = this.getEnergyStored() - (long) recipeEUt;
-            Optional<IFluidTank> fluidTank =
-                    getInputFluidInventory().getFluidTanks().stream()
-                            .filter(iFluidTank -> iFluidTank.getFluid() != null)
-                            .filter(iFluidTank -> iFluidTank.getFluid().isFluidEqual(GAMaterials.Pyrotheum.getFluid(drain)))
-                            .findFirst();
-            if (fluidTank.isPresent()) {
-                IFluidTank tank = fluidTank.get();
-                if (resultEnergy >= 0L && resultEnergy <= this.getEnergyCapacity() && tank.getCapacity() > 1) {
-                    tank.drain(drain, true);
-                    this.getEnergyContainer().changeEnergy(-recipeEUt);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return false;
+            if (!pyrotheum.isFluidStackIdentical(this.getInputTank().drain(pyrotheum, false)))
+                return false;
+            this.getInputTank().drain(pyrotheum, true);
+            return super.drawEnergy(recipeEUt);
         }
 
         @Override
