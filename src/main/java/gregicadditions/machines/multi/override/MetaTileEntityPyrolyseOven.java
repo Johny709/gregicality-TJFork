@@ -28,6 +28,8 @@ import gregtech.common.blocks.BlockWireCoil;
 import gregtech.common.blocks.MetaBlocks;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -64,7 +66,7 @@ public class MetaTileEntityPyrolyseOven extends GARecipeMapMultiblockController 
     private final Set<BlockPos> activeStates = new HashSet<>();
 
     public MetaTileEntityPyrolyseOven(ResourceLocation metaTileEntityId) {
-        super(metaTileEntityId, PYROLYSE_RECIPES);
+        super(metaTileEntityId, PYROLYSE_RECIPES, false, true, true);
         this.recipeMapWorkable = new PyrolyzeOvenWorkable(this);
     }
 
