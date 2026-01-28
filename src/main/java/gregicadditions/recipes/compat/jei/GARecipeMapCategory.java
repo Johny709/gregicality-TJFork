@@ -10,6 +10,7 @@ import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.gui.widgets.TankWidget;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.integration.jei.utils.render.FluidStackTextRenderer;
+import gregtech.integration.jei.utils.render.ItemStackTextRenderer;
 import mcp.MethodsReturnNonnullByDefault;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
