@@ -50,7 +50,6 @@ public class GARecipeWrapper implements IRecipeWrapper {
                 ingredientValues.forEach(stack -> {
                     if (ingredient.getCount() == 0) {
                         notConsumedInput.add(stack);
-                        stack.setCount(1);
                     } else stack.setCount(ingredient.getCount());
                 });
                 matchingInputs.add(ingredientValues);
