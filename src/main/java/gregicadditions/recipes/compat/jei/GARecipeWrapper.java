@@ -4,13 +4,12 @@ import gregicadditions.GAValues;
 import gregtech.api.recipes.CountableIngredient;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.Recipe.ChanceEntry;
+import gregtech.api.recipes.RecipeMap;
 import gregtech.api.recipes.recipeproperties.RecipeProperty;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.util.ItemStackHashStrategy;
-import gregtech.integration.jei.utils.JEIHelpers;
 import it.unimi.dsi.fastutil.Hash;
-import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
-import it.unimi.dsi.fastutil.ints.Int2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.ints.*;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenCustomHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet;
 import mezz.jei.api.ingredients.IIngredients;
@@ -19,8 +18,8 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.Ingredient;
 import net.minecraftforge.fluids.FluidStack;
+import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nonnull;
 import java.util.*;
@@ -29,6 +28,7 @@ import java.util.stream.Collectors;
 public class GARecipeWrapper implements IRecipeWrapper {
 
     private static final int lineHeight = 10;
+    private final RecipeMap<?> recipeMap;
     private final Recipe recipe;
 
     private final Hash.Strategy<ItemStack> strategy = ItemStackHashStrategy.comparingAllButCount();
@@ -36,9 +36,11 @@ public class GARecipeWrapper implements IRecipeWrapper {
     private final Set<ItemStack> notConsumedInput = new ObjectOpenCustomHashSet<>(strategy);
     private final Map<ItemStack, ChanceEntry> chanceOutput = new Object2ObjectOpenCustomHashMap<>(strategy);
     private final Int2BooleanMap ingredientConsumable = new Int2BooleanOpenHashMap();
+    private final Int2ObjectMap<int[]> chanceEntries = new Int2ObjectOpenHashMap<>();
     private final List<FluidStack> notConsumedFluidInput = new ArrayList<>();
 
-    public GARecipeWrapper(Recipe recipe) {
+    public GARecipeWrapper(RecipeMap<?> recipeMap, Recipe recipe) {
+        this.recipeMap = recipeMap;
         this.recipe = recipe;
     }
 
@@ -82,10 +84,12 @@ public class GARecipeWrapper implements IRecipeWrapper {
             List<ItemStack> recipeOutputs = recipe.getOutputs()
                     .stream().map(ItemStack::copy).collect(Collectors.toList());
             List<ChanceEntry> chancedOutputs = recipe.getChancedOutputs();
-            for (ChanceEntry chancedEntry : chancedOutputs) {
+            for (int i = 0; i < chancedOutputs.size(); i++) {
+                ChanceEntry chancedEntry = chancedOutputs.get(i);
                 ItemStack chancedStack = chancedEntry.getItemStack();
                 chanceOutput.put(chancedStack, chancedEntry);
                 recipeOutputs.add(chancedStack);
+                this.chanceEntries.put(i + this.recipeMap.getMaxInputs() + this.recipe.getOutputs().size(), ArrayUtils.addAll(new int[0], chancedEntry.getChance(), chancedEntry.getBoostPerTier()));
             }
 
             recipeOutputs.sort(Comparator.comparingInt(stack -> {
@@ -160,5 +164,9 @@ public class GARecipeWrapper implements IRecipeWrapper {
 
     public Int2BooleanMap getIngredientConsumable() {
         return this.ingredientConsumable;
+    }
+
+    public Int2ObjectMap<int[]> getChanceEntries() {
+        return this.chanceEntries;
     }
 }
