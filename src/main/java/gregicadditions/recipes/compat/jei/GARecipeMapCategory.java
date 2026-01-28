@@ -1,7 +1,6 @@
 package gregicadditions.recipes.compat.jei;
 
 import gregicadditions.Gregicality;
-import gregicadditions.integrations.jei.utils.render.FluidStackTextRenderer;
 import gregtech.api.capability.impl.FluidTankList;
 import gregtech.api.gui.BlankUIHolder;
 import gregtech.api.gui.IRenderContext;
@@ -10,6 +9,7 @@ import gregtech.api.gui.Widget;
 import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.gui.widgets.TankWidget;
 import gregtech.api.recipes.RecipeMap;
+import gregtech.integration.jei.utils.render.FluidStackTextRenderer;
 import mcp.MethodsReturnNonnullByDefault;
 import mezz.jei.api.IGuiHelper;
 import mezz.jei.api.gui.IDrawable;
