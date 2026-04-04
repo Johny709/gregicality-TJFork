@@ -2,5 +2,20 @@
   "animation": {
     "frametime": 2,
 	"frames": [3,2,1,0,9,8,7,6,5,4,4,4,5,6,7,8,9,0,1,2,3]
+  },
+  "ctm": {
+    "ctm_version": 1,
+    "type": "CTM",
+    "layer": "CUTOUT",
+    "textures": [
+      "gregtech:blocks/casings/solid/heating_coil/heating.coil.eternity.active.ctm"
+    ],
+    "extra": {
+      "connect_inside": true,
+      "light": {
+        "block": 15,
+        "sky": 15
+      }
+    }
   }
 }
