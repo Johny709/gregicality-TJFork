@@ -5,6 +5,7 @@ import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
 import gregicadditions.client.ClientHandler;
 import gregtech.api.capability.impl.FluidTankList;
+import gregtech.api.capability.impl.ItemHandlerList;
 import gregtech.api.gui.GuiTextures;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.TankWidget;
@@ -15,6 +16,7 @@ import gregtech.api.metatileentity.multiblock.IMultiAbilityProvider;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.render.SimpleOverlayRenderer;
 import gregtech.api.render.Textures;
+import gregtech.common.gui.widget.GhostCircuitWidget;
 import gregtech.common.metatileentities.electric.multiblockpart.MetaTileEntityMultiblockPart;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
@@ -22,13 +24,16 @@ import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidTank;
+import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 
 public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements ITieredMetaTileEntity, IMultiAbilityProvider {
@@ -36,6 +41,8 @@ public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements IT
     private final int tier;
     protected FluidTankList fluids;
     private ItemStackHandler inventory;
+    private ItemStackHandler circuitInventory;
+    private IItemHandlerModifiable combinedInventory;
    // private static final double[] rotations = new double[]{180.0, 0.0, -90.0, 90.0};
 
 
@@ -57,7 +64,9 @@ public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements IT
         //this.importFluids = new FluidTankList(false, fluids);
         //this.exportFluids = new FluidTankList(false, fluids);
         //this.fluidInventory = new FluidHandlerProxy(fluids, fluids);
+        this.circuitInventory = new ItemStackHandler(1);
         this.inventory = new ItemStackHandler(tier * tier);
+        this.combinedInventory = new ItemHandlerList(Arrays.asList(this.circuitInventory, this.inventory));
         this.itemInventory = inventory;
     }
 
@@ -88,6 +97,8 @@ public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements IT
             }
         }
         return builder.label(6, 6, getMetaFullName())
+                .widget(new GhostCircuitWidget(this.circuitInventory, 7 + (this.tier * 18), 54 + (18 * Math.max(0, this.tier - 3)))
+                        .setBackgroundTexture(GuiTextures.SLOT, GuiTextures.INT_CIRCUIT_OVERLAY))
                 .bindPlayerInventory(entityPlayer.inventory, GuiTextures.SLOT, 8, 18 + 18 * tier + 12)
                 .build(getHolder(), entityPlayer);
     }
@@ -113,6 +124,7 @@ public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements IT
     public NBTTagCompound writeToNBT(NBTTagCompound data) {
         super.writeToNBT(data);
         data.setTag("Inventory", inventory.serializeNBT());
+        data.setTag("GhostCircuit", circuitInventory.serializeNBT());
         data.setTag("FluidInventory", fluids.serializeNBT());
         return data;
     }
@@ -121,6 +133,7 @@ public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements IT
     public void readFromNBT(NBTTagCompound data) {
         super.readFromNBT(data);
         this.inventory.deserializeNBT(data.getCompoundTag("Inventory"));
+        this.circuitInventory.deserializeNBT(data.getCompoundTag("GhostCircuit"));
         this.fluids.deserializeNBT(data.getCompoundTag("FluidInventory"));
     }
 
@@ -139,7 +152,7 @@ public class TileEntityBuffer extends MetaTileEntityMultiblockPart implements IT
     @Override
     public void registerAbilityFor(MultiblockAbility<?> ability, List<Object> list) {
         if (ability == MultiblockAbility.IMPORT_ITEMS) {
-            list.add(itemInventory);
+            list.add(this.combinedInventory);
         }
 
         if (ability == MultiblockAbility.IMPORT_FLUIDS) {
