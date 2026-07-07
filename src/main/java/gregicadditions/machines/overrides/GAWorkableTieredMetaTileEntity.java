@@ -14,17 +14,21 @@ import gregtech.api.capability.impl.RecipeLogicEnergy;
 import gregtech.api.recipes.Recipe;
 import gregtech.api.recipes.RecipeMap;
 import gregtech.api.render.OrientedOverlayRenderer;
+import gregtech.common.sound.MachineSoundManager;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.SoundEvent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fluids.IFluidTank;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
 
@@ -162,6 +166,27 @@ public abstract class GAWorkableTieredMetaTileEntity extends GATieredMetaTileEnt
         }
         return true;
     }
+
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public SoundEvent getSound() {
+        return workable.recipeMap.getSound();
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    public boolean shouldPlaySound() {
+        return isValid() && workable.isActive();
+    }
+
+
+    @Override
+    @SideOnly(Side.CLIENT)
+    public void updateSound() {
+        MachineSoundManager.update(this);
+    }
+
 
     @Override
     public NBTTagCompound writeToNBT(NBTTagCompound data) {
